@@ -3,56 +3,37 @@ const tictactoe = (function() {
   let started
   let over
 
-  let players = {}
-  let lastPlayer
+  let players = ["O", "X"]
+  let currentPlayer = players[0]
   let winner
 
-  const createPlayer = function(token, name) {
-    if(over) restartGame(true)
-    let tokens = Object.keys(players)
-    if(tokens.length == 2) {
-      throw("This is a 2 player game")
-    } else if(token == tokens[0]) {
-      throw("Please choose another token")
-    }
-    players[token] = name
-  }
-  const listPlayers = function() {
-    return players
-  }
-  const restartGame = function(reset_players=false) {
+  const restartGame = function() {
     console.log("Restarting game...")
-    if(reset_players) players = {}
     board      = null
     started    = null
     over       = null
-    lastPlayer = null
     winner     = null
   }
   const startGame = function() {
     if(over) restartGame()
-    let tokens = Object.keys(players)
-    if(tokens.length != 2) throw("This is a 2 player game")
     board = [
       [null, null, null], [null, null, null], [null, null, null]
     ]
     started = true
   }
-  const mark = function(token, row, column) {
+  const mark = function(row, column) {
     if(!started || over) {
       throw("Please start the game")
-    } else if(lastPlayer == token) {
-      throw("You can't do that")
     } else if(board[row][column] !== null) {
       throw("That cell is not empty")
     }
-    board[row][column] = token
-    lastPlayer = token
+    board[row][column] = currentPlayer
 
-    checkWin(token)
+    checkWin()
+    currentPlayer = currentPlayer == players[0] ? players[1] : players[0]
     return board
   }
-  const checkWin = function(token) {
+  const checkWin = function() {
     let combinations = [
       board[0],     board[1],    board[2],
       [board[0][0], board[1][0], board[2][0]],
@@ -62,25 +43,24 @@ const tictactoe = (function() {
       [board[0][2], board[1][1], board[2][0]]
     ]
     combinations.forEach(combination => {
-      if(combination.every((v,i) => v === token)) {
+      if(combination.every((v,i) => v === currentPlayer)) {
         over   = true
         winner = true
       }
     })
-    if(winner) win(token)
+    if(winner) win()
   }
-  const win = function(token) {
-    throw(`${players[token]} won!`)
+  const win = function() {
+    throw(`"${currentPlayer}" won!`)
   }
   const debug = function() {
-    console.log([board, started, over, lastPlayer, winner])
+    console.log([board, started, over, currentPlayer, winner])
   }
 
   return {
-    createPlayer,
-    listPlayers,
     startGame,
     mark,
+    currentPlayer,
     debug
   }
 })()
