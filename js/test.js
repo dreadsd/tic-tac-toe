@@ -1,7 +1,0 @@
-tictactoe.startGame()
-tictactoe.mark(0, 0)
-tictactoe.mark(1, 0)
-tictactoe.mark(0, 1)
-tictactoe.mark(1, 1)
-tictactoe.mark(2, 2)
-tictactoe.mark(1, 2)

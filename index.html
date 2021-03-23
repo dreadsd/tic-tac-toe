@@ -8,12 +8,13 @@
     <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Neucha&display=swap" rel="stylesheet">
 
+    <link href='https://css.gg/moon.css' rel='stylesheet'>
     <link rel="stylesheet" href="../reset.css">
     <link rel="stylesheet" href="css/styles.css">
-    <script src="js/modules.js"></script>
     <title>Tic-Tac-Toe</title>
   </head>
   <body>
+    <i id="themeIcon" class="gg-moon"></i></i>
     <div class="main">
       <div class="grid-wrapper">
         <div class="grid">
@@ -31,6 +32,7 @@
       <div class="info-wrapper">
         <div id="info">
           <div id="current">
+            <span id="turn"></span>
             <div class="btn" id="start">
               start
             </div>
@@ -38,6 +40,7 @@
         </div>
       </div>
     </div>
-    <script src="js/listeners.js"></script>
   </body>
+  <script src="js/modules.js"></script>
+  <script src="js/listeners.js"></script>
 </html>

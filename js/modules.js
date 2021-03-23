@@ -61,3 +61,103 @@ const tictactoe = (function() {
     debug
   }
 })()
+
+const dom = (function(doc) {
+  let container = doc.querySelector("#current")
+  let grid      = doc.querySelector(".grid")
+  let turn      = doc.querySelector("#turn")
+  let msg
+
+  // Start game
+  const beginGame = function(e) {
+    resetGrid()
+    tictactoe.startGame()
+    e.target.remove()
+    setCurrentMark()
+  }
+  const resetGrid = function() {
+    let i = 0
+    while(i < grid.childElementCount) {
+      grid.children[i].textContent = null
+      i++
+    }
+  }
+  const setCurrentMark = function() {
+    turn.textContent = `"${tictactoe.getCurrentPlayer()}"`
+  }
+
+  // Mark cell
+  const markCell = function(e) {
+    let coord = e.target.dataset.coord.split("")
+    let currentMark = tictactoe.getCurrentPlayer()
+    let retCode = tictactoe.mark(coord[0], coord[1])
+    if(Number.isInteger(retCode)) {
+      if(retCode >= 3) {
+        e.target.textContent = currentMark
+        finishGame()
+      }
+      return code(retCode)
+    }
+    e.target.textContent = currentMark
+    setCurrentMark()
+  }
+  const code = function(id) {
+    if(doc.querySelector("#current > .msg")) return
+    switch(id) {
+      case 1:
+        msg = "Please start the game"; break
+      case 2:
+        msg = "That cell is not empty"; break
+      case 3:
+        msg = `"${tictactoe.getCurrentPlayer()}" won!`; break
+      case 4:
+        msg = "Game Over"; break
+    }
+    msg = createMsg(msg)
+    showMsg(msg)
+    setTimeout(disappearMsg.bind(this, msg), 2000)
+  }
+  const createMsg = function(msg) {
+    let msgDiv = doc.createElement("div")
+    msgDiv.classList.add("msg")
+    msgDiv.textContent = msg
+    return msgDiv
+  }
+  const showMsg = function(msgObj) {
+    toggleTurn()
+    container.append(msgObj)
+  }
+  const disappearMsg = function(msgObj) {
+    toggleTurn()
+    msgObj.remove()
+  }
+  const toggleTurn = function() {
+    turn.classList.toggle("display-none")
+    let startBtn = doc.querySelector("#start")
+    if(startBtn) startBtn.classList.toggle("display-none")
+  }
+
+  // Finish game
+  const finishGame = function() {
+    turn.textContent = null
+    container.append(createStartBtn())
+  }
+  const createStartBtn = function() {
+    let btn = document.createElement("div")
+    btn.classList.add("btn")
+    btn.id = "start"
+    btn.textContent = "start"
+    return btn
+  }
+
+  // Change theme
+  const changeTheme = function() {
+    document.querySelector("body").classList.toggle("dark")
+  }
+
+  return {
+    beginGame,
+    markCell,
+    changeTheme
+  }
+})(document)
