@@ -11,7 +11,10 @@ function mainTarget() {
 
 function setCurMark() {
   let container = mainTarget()
-  container.textContent = `"${tictactoe.getCurrentPlayer()}"`
+  let turn = document.createElement("span")
+  turn.textContent = `"${tictactoe.getCurrentPlayer()}"`
+  container.textContent = null
+  container.append(turn)
 }
 
 function markCell(e) {
@@ -50,7 +53,7 @@ function error(id) {
 }
 
 function showMsg(msg) {
-  mainTarget().querySelector(".btn").classList.add("display-none")
+  mainTarget().firstElementChild.classList.add("display-none")
   msgDiv = createMsg(msg)
   mainTarget().append(msgDiv)
   setTimeout(disappearMsg.bind(this, msgDiv), 2500)
@@ -64,7 +67,7 @@ function createMsg(msg) {
 }
 
 function disappearMsg(container) {
-  mainTarget().querySelector(".btn").classList.remove("display-none")
+  mainTarget().firstElementChild.classList.remove("display-none")
   container.remove()
 }
 

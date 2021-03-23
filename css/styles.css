@@ -38,6 +38,15 @@ G  R  I  D
   background-color: #eee;
 }
 
+.cell-1 { border-top: none; border-left: none; }
+.cell-2 { border-top: none; }
+.cell-3 { border-top: none; border-right: none; }
+.cell-4 { border-left: none; }
+.cell-6 { border-right: none; }
+.cell-7 { border-bottom: none; border-left: none; }
+.cell-8 { border-bottom: none; }
+.cell-9 { border-bottom: none; border-right: none; }
+
 /*
 ==========
 I  N  F  O
@@ -45,28 +54,31 @@ I  N  F  O
 */
 
 .btn {
-  border: 4px solid black;
   padding: 1rem;
   border-radius: 1.5rem;
   cursor: pointer;
   font-size: 5rem;
 }
 
+#start {
+  transition: all 0.5s ease-out;
+}
+
 #start:hover {
-  background: #ffdddd;
+  margin-bottom: 4rem;
 }
 
 #current {
   width: max-content;
   max-width: 100%;
   margin: 0 auto;
-  font-size: 10rem;
+  font-size: 6rem;
   font-family: 'Open Sans', sans-serif;
 }
 
 .msg {
   font-size: 2rem;
-  margin-top: 6rem;
+  margin-top: 5rem;
 }
 
 /*
@@ -77,19 +89,26 @@ M  E  D  I  A
 
 @media screen and (min-width: 768px) {
   .main {
+    max-width: 1024px;
+    margin: 0 auto;
+
     display: flex;
     height: 100vh;
     align-items: center;
   }
 
   .grid {
-    width: 50vw;
-    height: 50vw;
+    width: 30rem;
+    height: 30rem;
     margin-bottom: 0;
   }
 
   .info-wrapper {
     flex: 1;
+  }
+
+  #current {
+    width: min-content;
   }
 
   .msg {
@@ -98,39 +117,20 @@ M  E  D  I  A
 }
 
 @media screen and (min-width: 1024px) {
+  .main {
+    padding: 2rem;
+  }
+
   .cell {
     font-size: 4.35rem;
   }
 
-  .btn {
-    border: 5.5px solid black;
-    font-size: 8rem;
-  }
-
   #current {
+    width: max-content;
     font-size: 11rem;
   }
 
   .msg {
     font-size: 2.2rem;
-  }
-}
-
-@media screen and (min-width: 1440px) {
-  .cell {
-    font-size: 6rem;
-  }
-
-  .btn {
-    border: 7px solid black;
-    font-size: 12rem;
-  }
-
-  #current {
-    font-size: 12rem;
-  }
-
-  .msg {
-    font-size: 2.4rem;
   }
 }
