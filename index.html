@@ -17,22 +17,27 @@
     <div class="main">
       <div class="grid-wrapper">
         <div class="grid soft-border">
-          <div class="cell soft-border">X</div>
-          <div class="cell soft-border">O</div>
-          <div class="cell soft-border">X</div>
-          <div class="cell soft-border">O</div>
-          <div class="cell soft-border">X</div>
-          <div class="cell soft-border"></div>
-          <div class="cell soft-border">X</div>
-          <div class="cell soft-border"></div>
-          <div class="cell soft-border">O</div>
+          <div class="cell soft-border" data-coord="00"></div>
+          <div class="cell soft-border" data-coord="01"></div>
+          <div class="cell soft-border" data-coord="02"></div>
+          <div class="cell soft-border" data-coord="10"></div>
+          <div class="cell soft-border" data-coord="11"></div>
+          <div class="cell soft-border" data-coord="12"></div>
+          <div class="cell soft-border" data-coord="20"></div>
+          <div class="cell soft-border" data-coord="21"></div>
+          <div class="cell soft-border" data-coord="22"></div>
         </div>
       </div>
       <div class="info-wrapper">
         <div id="info">
-          <div id="current">"O"</div>
+          <div id="current">
+            <div class="btn" id="start">
+              start
+            </div>
+          </div>
         </div>
       </div>
     </div>
+    <script src="js/listeners.js"></script>
   </body>
 </html>

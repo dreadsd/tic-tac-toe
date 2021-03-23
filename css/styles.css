@@ -40,6 +40,18 @@ I  N  F  O
 ==========
 */
 
+.btn {
+  border: 4px solid black;
+  padding: 1rem;
+  border-radius: 1.5rem;
+  cursor: pointer;
+  font-size: 5rem;
+}
+
+#start:hover {
+  background: #ffdddd;
+}
+
 #current {
   width: min-content;
   margin: 0 auto;
@@ -76,6 +88,11 @@ M  E  D  I  A
     font-size: 4.35rem;
   }
 
+  .btn {
+    border: 5.5px solid black;
+    font-size: 8rem;
+  }
+
   #current {
     font-size: 11rem;
   }
@@ -84,6 +101,11 @@ M  E  D  I  A
 @media screen and (min-width: 1440px) {
   .cell {
     font-size: 6rem;
+  }
+
+  .btn {
+    border: 7px solid black;
+    font-size: 12rem;
   }
 
   #current {
