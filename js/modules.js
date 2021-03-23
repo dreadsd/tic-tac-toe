@@ -1,35 +1,32 @@
 const tictactoe = (function() {
   let board
   let started
-  let over
+  let moves
 
   let players = ["O", "X"]
-  let currentPlayer = players[0]
+  let currentPlayer
   let winner
 
-  const restartGame = function() {
-    console.log("Restarting game...")
-    board      = null
-    started    = null
-    over       = null
-    winner     = null
-  }
   const startGame = function() {
-    if(over) restartGame()
     board = [
       [null, null, null], [null, null, null], [null, null, null]
     ]
+    moves = board.length * board[0].length
+    currentPlayer = players[0]
+    winner = null
     started = true
   }
   const mark = function(row, column) {
-    if(!started || over) {
+    if(!started) {
       throw("Please start the game")
     } else if(board[row][column] !== null) {
       throw("That cell is not empty")
     }
     board[row][column] = currentPlayer
+    moves--
 
     checkWin()
+    if(moves <= 0) return gameOver()
     currentPlayer = currentPlayer == players[0] ? players[1] : players[0]
     return board
   }
@@ -44,23 +41,26 @@ const tictactoe = (function() {
     ]
     combinations.forEach(combination => {
       if(combination.every((v,i) => v === currentPlayer)) {
-        over   = true
         winner = true
       }
     })
-    if(winner) win()
+    if(winner) gameOver(`"${currentPlayer}" won!`)
   }
-  const win = function() {
-    throw(`"${currentPlayer}" won!`)
+  const gameOver = function(msg="Game Over") {
+    started = false
+    throw(msg)
   }
   const debug = function() {
-    console.log([board, started, over, currentPlayer, winner])
+    console.log([board, started, currentPlayer, moves, winner])
+  }
+  const getCurrentPlayer = function() {
+    return currentPlayer
   }
 
   return {
     startGame,
     mark,
-    currentPlayer,
+    getCurrentPlayer,
     debug
   }
 })()
