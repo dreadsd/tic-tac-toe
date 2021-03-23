@@ -1,6 +1,25 @@
+:root {
+  --background: #fff;
+  --foreground: #000;
+  --backghover: #ccc;
+  --border-col: #111;
+}
+
+.dark {
+  --background: #333;
+  --foreground: #fff;
+  --backghover: #222;
+  --border-col: #eee;
+}
+
 * {
   box-sizing: border-box;
   user-select: none;
+}
+
+body {
+  background: var(--background);
+  color:      var(--foreground);
 }
 
 .display-none {
@@ -22,7 +41,7 @@ G  R  I  D
 }
 
 .soft-border {
-  border: 1px solid black;
+  border: 1px solid var(--border-col);
 }
 
 .cell {
@@ -35,7 +54,7 @@ G  R  I  D
 }
 
 .cell:hover {
-  background-color: #eee;
+  background-color: var(--backghover);
 }
 
 .cell-1 { border-top: none; border-left: none; }
@@ -114,6 +133,19 @@ M  E  D  I  A
   .msg {
     margin-top: 0;
   }
+}
+
+/*
+=============
+T  H  E  M  E
+=============
+*/
+
+#themeIcon {
+  position: absolute !important;
+  top: 1rem;
+  right: 1rem;
+  cursor: pointer;
 }
 
 @media screen and (min-width: 1024px) {
