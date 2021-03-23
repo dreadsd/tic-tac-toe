@@ -30,6 +30,7 @@ function markCell(e) {
 }
 
 function error(id) {
+  if(document.querySelector("#current > .msg")) return
   let msg
   switch(id) {
     case 1:
@@ -45,17 +46,40 @@ function error(id) {
       msg = "Game Over"
       break
   }
-  alert(msg)
+  showMsg(msg)
+}
+
+function showMsg(msg) {
+  mainTarget().querySelector(".btn").classList.add("display-none")
+  msgDiv = createMsg(msg)
+  mainTarget().append(msgDiv)
+  setTimeout(disappearMsg.bind(this, msgDiv), 2500)
+}
+
+function createMsg(msg) {
+  let msgDiv = document.createElement("div")
+  msgDiv.classList.add("msg")
+  msgDiv.textContent = msg
+  return msgDiv
+}
+
+function disappearMsg(container) {
+  mainTarget().querySelector(".btn").classList.remove("display-none")
+  container.remove()
 }
 
 function finishGame() {
   let container = mainTarget()
   container.textContent = null
+  container.append(createStartBtn())
+}
+
+function createStartBtn() {
   let btn = document.createElement("div")
   btn.classList.add("btn")
   btn.id = "start"
   btn.textContent = "start"
-  container.append(btn)
+  return btn
 }
 
 function resetGrid() {

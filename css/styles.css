@@ -3,6 +3,10 @@
   user-select: none;
 }
 
+.display-none {
+  display: none;
+}
+
 /*
 ==========
 G  R  I  D
@@ -53,10 +57,16 @@ I  N  F  O
 }
 
 #current {
-  width: min-content;
+  width: max-content;
+  max-width: 100%;
   margin: 0 auto;
   font-size: 10rem;
   font-family: 'Open Sans', sans-serif;
+}
+
+.msg {
+  font-size: 2rem;
+  margin-top: 6rem;
 }
 
 /*
@@ -81,6 +91,10 @@ M  E  D  I  A
   .info-wrapper {
     flex: 1;
   }
+
+  .msg {
+    margin-top: 0;
+  }
 }
 
 @media screen and (min-width: 1024px) {
@@ -96,6 +110,10 @@ M  E  D  I  A
   #current {
     font-size: 11rem;
   }
+
+  .msg {
+    font-size: 2.2rem;
+  }
 }
 
 @media screen and (min-width: 1440px) {
@@ -110,5 +128,9 @@ M  E  D  I  A
 
   #current {
     font-size: 12rem;
+  }
+
+  .msg {
+    font-size: 2.4rem;
   }
 }
