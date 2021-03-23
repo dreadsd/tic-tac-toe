@@ -1,0 +1,168 @@
+:root {
+  --background: #fff;
+  --foreground: #000;
+  --backghover: #ccc;
+  --border-col: #111;
+}
+
+.dark {
+  --background: #333;
+  --foreground: #fff;
+  --backghover: #222;
+  --border-col: #eee;
+}
+
+* {
+  box-sizing: border-box;
+  user-select: none;
+}
+
+body {
+  background: var(--background);
+  color:      var(--foreground);
+}
+
+.display-none {
+  display: none;
+}
+
+/*
+==========
+G  R  I  D
+==========
+*/
+
+.grid {
+  display: grid;
+  grid-template: 1fr 1fr 1fr / 1fr 1fr 1fr;
+  width: 100vw;
+  height: 100vw;
+  margin-bottom: 3rem;
+}
+
+.soft-border {
+  border: 1px solid var(--border-col);
+}
+
+.cell {
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2.7rem;
+  font-family: 'Neucha', cursive;
+}
+
+.cell:hover {
+  background-color: var(--backghover);
+}
+
+.cell-1 { border-top: none; border-left: none; }
+.cell-2 { border-top: none; }
+.cell-3 { border-top: none; border-right: none; }
+.cell-4 { border-left: none; }
+.cell-6 { border-right: none; }
+.cell-7 { border-bottom: none; border-left: none; }
+.cell-8 { border-bottom: none; }
+.cell-9 { border-bottom: none; border-right: none; }
+
+/*
+==========
+I  N  F  O
+==========
+*/
+
+.btn {
+  padding: 1rem;
+  border-radius: 1.5rem;
+  cursor: pointer;
+  font-size: 5rem;
+}
+
+#start {
+  transition: all 0.5s ease-out;
+}
+
+#start:hover {
+  margin-bottom: 4rem;
+}
+
+#current {
+  width: max-content;
+  max-width: 100%;
+  margin: 0 auto;
+  font-size: 6rem;
+  font-family: 'Open Sans', sans-serif;
+}
+
+.msg {
+  font-size: 2rem;
+  margin-top: 5rem;
+}
+
+/*
+=============
+M  E  D  I  A
+=============
+*/
+
+@media screen and (min-width: 768px) {
+  .main {
+    max-width: 1024px;
+    margin: 0 auto;
+
+    display: flex;
+    height: 100vh;
+    align-items: center;
+  }
+
+  .grid {
+    width: 30rem;
+    height: 30rem;
+    margin-bottom: 0;
+  }
+
+  .info-wrapper {
+    flex: 1;
+  }
+
+  #current {
+    width: min-content;
+  }
+
+  .msg {
+    margin-top: 0;
+  }
+}
+
+/*
+=============
+T  H  E  M  E
+=============
+*/
+
+#themeIcon {
+  position: absolute !important;
+  top: 1rem;
+  right: 1rem;
+  cursor: pointer;
+}
+
+@media screen and (min-width: 1024px) {
+  .main {
+    padding: 2rem;
+  }
+
+  .cell {
+    font-size: 4.35rem;
+  }
+
+  #current {
+    width: max-content;
+    font-size: 11rem;
+  }
+
+  .msg {
+    font-size: 2.2rem;
+  }
+}

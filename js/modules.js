@@ -1,102 +1,163 @@
-/*
-
-let combinations = [
-  [b[0], b[1], b[2]],
-  [b[3], b[4], b[5]],
-  [b[6], b[7], b[8]],
-  [b[0], b[3], b[6]],
-  [b[1], b[4], b[7]],
-  [b[2], b[5], b[8]]
-]
-
-let winner = false
-combinations.forEach(combination => {
-  if(combination == [token, token, token]) return winner = true
-}
-*/
-
 const tictactoe = (function() {
-  let b
+  let board
+  let started
+  let moves
 
-  /*
-  const playerProto = {
-    win() {
-      this.name + "won!"
-    }
-  }
-  const Player = (token, name) => {
-    return Object.assign(Object.create(playerProto), {
-      token, name
-    })
-  }
-  */
-
-  let players = {}
-  let lastPlayer
-  let started = false
+  let players = ["O", "X"]
+  let currentPlayer
   let winner
 
-  const createPlayer = function(token, name) {
-    let tokens = Object.keys(players)
-    if(tokens.length == 2) {
-      throw("This is a 2 player game")
-    } else if(tokens.length == 1 &&
-              token == tokens[0]) {
-      throw("Please choose another token")
-    }
-    players[token] = name
-  }
-  const listPlayers = function() {
-    return players
-  }
   const startGame = function() {
-    let tokens = Object.keys(players)
-    if(tokens.length != 2) throw("This is a 2 player game")
-    b = [
+    board = [
       [null, null, null], [null, null, null], [null, null, null]
     ]
+    moves = board.length * board[0].length
+    currentPlayer = players[0]
+    winner = null
     started = true
   }
-  const mark = function(token, row, column) {
+  const mark = function(row, column) {
     if(!started) {
-      throw("Please start the game")
-    } else if(lastPlayer == token) {
-      throw("You can't do that")
-    } else if(b[row][column] !== null) {
-      throw("That cell is not empty")
+      return 1
+    } else if(board[row][column] !== null) {
+      return 2
     }
-    b[row][column] = token
-    checkWin(token)
+    board[row][column] = currentPlayer
+    moves--
 
-    lastPlayer = token
-    return b
+    checkWin()
+    if(winner)     return gameOver(3)
+    if(moves <= 0) return gameOver()
+    currentPlayer = currentPlayer == players[0] ? players[1] : players[0]
   }
-  const checkWin = function(token) {
+  const checkWin = function() {
     let combinations = [
-      [b[0], b[1], b[2]], [b[3], b[4], b[5]], [b[6], b[7], b[8]],
-      [b[0], b[3], b[6]], [b[1], b[4], b[7]], [b[2], b[5], b[8]],
-      [b[0], b[4], b[8]], [b[2], b[4], b[6]]
+      board[0],     board[1],    board[2],
+      [board[0][0], board[1][0], board[2][0]],
+      [board[0][1], board[1][1], board[2][1]],
+      [board[0][2], board[1][2], board[2][2]],
+      [board[0][0], board[1][1], board[2][2]],
+      [board[0][2], board[1][1], board[2][0]]
     ]
-
-    let winner = false
     combinations.forEach(combination => {
-      if(combination == [token, token, token]) {
-        console.log(true)
-        return winner = true
-      }
+      if(combination.every((v,i) => v === currentPlayer)) winner = true
     })
-    console.log(winner)
-    if(winner) win(token)
   }
-  const win = function(token) {
-    throw(`${players[token]} won!`)
+  const gameOver = function(msg=4) {
+    started = false
+    return msg
+  }
+  const debug = function() {
+    console.log([board, started, currentPlayer, moves, winner])
+  }
+  const getCurrentPlayer = function() {
+    return currentPlayer
   }
 
   return {
-    createPlayer,
-    listPlayers,
     startGame,
     mark,
-    winner
+    getCurrentPlayer,
+    debug
   }
 })()
+
+const dom = (function(doc) {
+  let container = doc.querySelector("#current")
+  let grid      = doc.querySelector(".grid")
+  let turn      = doc.querySelector("#turn")
+  let msg
+
+  // Start game
+  const beginGame = function(e) {
+    resetGrid()
+    tictactoe.startGame()
+    e.target.remove()
+    setCurrentMark()
+  }
+  const resetGrid = function() {
+    let i = 0
+    while(i < grid.childElementCount) {
+      grid.children[i].textContent = null
+      i++
+    }
+  }
+  const setCurrentMark = function() {
+    turn.textContent = `"${tictactoe.getCurrentPlayer()}"`
+  }
+
+  // Mark cell
+  const markCell = function(e) {
+    let coord = e.target.dataset.coord.split("")
+    let currentMark = tictactoe.getCurrentPlayer()
+    let retCode = tictactoe.mark(coord[0], coord[1])
+    if(Number.isInteger(retCode)) {
+      if(retCode >= 3) {
+        e.target.textContent = currentMark
+        finishGame()
+      }
+      return code(retCode)
+    }
+    e.target.textContent = currentMark
+    setCurrentMark()
+  }
+  const code = function(id) {
+    if(doc.querySelector("#current > .msg")) return
+    switch(id) {
+      case 1:
+        msg = "Please start the game"; break
+      case 2:
+        msg = "That cell is not empty"; break
+      case 3:
+        msg = `"${tictactoe.getCurrentPlayer()}" won!`; break
+      case 4:
+        msg = "Game Over"; break
+    }
+    msg = createMsg(msg)
+    showMsg(msg)
+    setTimeout(disappearMsg.bind(this, msg), 2000)
+  }
+  const createMsg = function(msg) {
+    let msgDiv = doc.createElement("div")
+    msgDiv.classList.add("msg")
+    msgDiv.textContent = msg
+    return msgDiv
+  }
+  const showMsg = function(msgObj) {
+    toggleTurn()
+    container.append(msgObj)
+  }
+  const disappearMsg = function(msgObj) {
+    toggleTurn()
+    msgObj.remove()
+  }
+  const toggleTurn = function() {
+    turn.classList.toggle("display-none")
+    let startBtn = doc.querySelector("#start")
+    if(startBtn) startBtn.classList.toggle("display-none")
+  }
+
+  // Finish game
+  const finishGame = function() {
+    turn.textContent = null
+    container.append(createStartBtn())
+  }
+  const createStartBtn = function() {
+    let btn = document.createElement("div")
+    btn.classList.add("btn")
+    btn.id = "start"
+    btn.textContent = "start"
+    return btn
+  }
+
+  // Change theme
+  const changeTheme = function() {
+    document.querySelector("body").classList.toggle("dark")
+  }
+
+  return {
+    beginGame,
+    markCell,
+    changeTheme
+  }
+})(document)
