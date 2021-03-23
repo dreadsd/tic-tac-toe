@@ -18,17 +18,17 @@ const tictactoe = (function() {
   }
   const mark = function(row, column) {
     if(!started) {
-      throw("Please start the game")
+      return 1
     } else if(board[row][column] !== null) {
-      throw("That cell is not empty")
+      return 2
     }
     board[row][column] = currentPlayer
     moves--
 
     checkWin()
+    if(winner)     return gameOver(3)
     if(moves <= 0) return gameOver()
     currentPlayer = currentPlayer == players[0] ? players[1] : players[0]
-    return board
   }
   const checkWin = function() {
     let combinations = [
@@ -40,15 +40,12 @@ const tictactoe = (function() {
       [board[0][2], board[1][1], board[2][0]]
     ]
     combinations.forEach(combination => {
-      if(combination.every((v,i) => v === currentPlayer)) {
-        winner = true
-      }
+      if(combination.every((v,i) => v === currentPlayer)) winner = true
     })
-    if(winner) gameOver(`"${currentPlayer}" won!`)
   }
-  const gameOver = function(msg="Game Over") {
+  const gameOver = function(msg=4) {
     started = false
-    throw(msg)
+    return msg
   }
   const debug = function() {
     console.log([board, started, currentPlayer, moves, winner])
