@@ -3,11 +3,36 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Neucha&display=swap" rel="stylesheet">
+
     <link rel="stylesheet" href="../reset.css">
     <link rel="stylesheet" href="css/styles.css">
     <script src="js/modules.js"></script>
     <title>Tic-Tac-Toe</title>
   </head>
   <body>
+    <div class="main">
+      <div class="grid-wrapper">
+        <div class="grid soft-border">
+          <div class="cell soft-border">X</div>
+          <div class="cell soft-border">O</div>
+          <div class="cell soft-border">X</div>
+          <div class="cell soft-border">O</div>
+          <div class="cell soft-border">X</div>
+          <div class="cell soft-border"></div>
+          <div class="cell soft-border">X</div>
+          <div class="cell soft-border"></div>
+          <div class="cell soft-border">O</div>
+        </div>
+      </div>
+      <div class="info-wrapper">
+        <div id="info">
+          <div id="current">"O"</div>
+        </div>
+      </div>
+    </div>
   </body>
 </html>
