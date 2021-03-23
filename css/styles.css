@@ -20,6 +20,7 @@
 body {
   background: var(--background);
   color:      var(--foreground);
+  transition: all 0.5s ease-in;
 }
 
 .display-none {
@@ -137,15 +138,23 @@ M  E  D  I  A
 
 /*
 =============
-T  H  E  M  E
+I  C  O  N  S
 =============
 */
 
-#themeIcon {
+[id$="Icon"] {
   position: absolute !important;
+  cursor: pointer;
+}
+
+#themeIcon {
   top: 1rem;
   right: 1rem;
-  cursor: pointer;
+}
+
+#autoIcon {
+  top: 1rem;
+  left: 1rem;
 }
 
 @media screen and (min-width: 1024px) {
