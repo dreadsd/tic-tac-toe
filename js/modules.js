@@ -47,17 +47,21 @@ const tictactoe = (function() {
     started = false
     return msg
   }
-  const debug = function() {
-    console.log([board, started, currentPlayer, moves, winner])
-  }
   const getCurrentPlayer = function() {
     return currentPlayer
+  }
+  const getBoard = function() {
+    return board
+  }
+  const debug = function() {
+    console.log([board, started, currentPlayer, moves, winner])
   }
 
   return {
     startGame,
     mark,
     getCurrentPlayer,
+    getBoard,
     debug
   }
 })()
@@ -66,6 +70,7 @@ const dom = (function(doc) {
   let container = doc.querySelector("#current")
   let grid      = doc.querySelector(".grid")
   let turn      = doc.querySelector("#turn")
+  let autoMode  = false
   let msg
 
   // Start game
@@ -87,18 +92,26 @@ const dom = (function(doc) {
   }
 
   // Mark cell
-  const markCell = function(e) {
-    let coord = e.target.dataset.coord.split("")
+  const markCell = function(target) {
+    let coord = target.dataset.coord.split("")
     let currentMark = tictactoe.getCurrentPlayer()
     let retCode = tictactoe.mark(coord[0], coord[1])
     if(Number.isInteger(retCode)) {
       if(retCode >= 3) {
-        e.target.textContent = currentMark
+        target.textContent = currentMark
         finishGame()
       }
       return code(retCode)
     }
-    e.target.textContent = currentMark
+    target.textContent = currentMark
+    console.log("Entry: " + currentMark + " " + coord)
+    if(autoMode &&
+        !(coord[0] == bot.getNums()[0] && coord[1] == bot.getNums()[1])) {
+
+      let nums = bot.randomize().join("")
+      console.log(nums)
+      return markCell(document.querySelector(`[data-coord="${nums}"]`))
+    }
     setCurrentMark()
   }
   const code = function(id) {
@@ -155,9 +168,39 @@ const dom = (function(doc) {
     document.querySelector("body").classList.toggle("dark")
   }
 
+  // Automatic mode
+  const automaticMode = function() {
+    autoMode = true
+  }
+
   return {
     beginGame,
     markCell,
-    changeTheme
+    changeTheme,
+    automaticMode
   }
 })(document)
+
+const bot = (function() {
+  let numbers = [null, null]
+
+  const randomize = function() {
+    let empty = false
+    let autoRow, autoCol
+    while(empty == false) {
+      autoRow = Math.floor(Math.random() * tictactoe.getBoard().length)
+      autoCol = Math.floor(Math.random() * tictactoe.getBoard()[0].length)
+      if(tictactoe.getBoard()[autoRow][autoCol] == null) empty = true
+    }
+    numbers = [autoRow, autoCol]
+    return numbers
+  }
+  const getNums = function() {
+    return numbers
+  }
+
+  return {
+    randomize,
+    getNums
+  }
+})()
