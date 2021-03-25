@@ -1,15 +1,25 @@
 :root {
   --background: #fff;
   --foreground: #000;
-  --backghover: #ccc;
+  --backghover: #eee;
   --border-col: #111;
 }
 
 .dark {
   --background: #333;
   --foreground: #fff;
-  --backghover: #222;
+  --backghover: #444;
   --border-col: #eee;
+}
+
+.robot-light {
+  --background: #ffcccc;
+  --backghover: #eebbbb;
+}
+
+.robot-dark {
+  --background: #330000;
+  --backghover: #441111;
 }
 
 * {
@@ -20,6 +30,7 @@
 body {
   background: var(--background);
   color:      var(--foreground);
+  transition: all 0.5s ease-in;
 }
 
 .display-none {
@@ -53,6 +64,10 @@ G  R  I  D
   font-family: 'Neucha', cursive;
 }
 
+.cell:focus {
+  outline: thick dashed var(--foreground);
+}
+
 .cell:hover {
   background-color: var(--backghover);
 }
@@ -73,14 +88,16 @@ I  N  F  O
 */
 
 .btn {
-  padding: 1rem;
-  border-radius: 1.5rem;
   cursor: pointer;
   font-size: 5rem;
 }
 
+.btn:focus {
+  outline: thick dotted var(--foreground);
+}
+
 #start {
-  transition: all 0.5s ease-out;
+  transition: color 0.5s ease-out, margin 0.5s ease-out;
 }
 
 #start:hover {
@@ -95,7 +112,7 @@ I  N  F  O
   font-family: 'Open Sans', sans-serif;
 }
 
-.msg {
+#msg {
   font-size: 2rem;
   margin-top: 5rem;
 }
@@ -130,22 +147,34 @@ M  E  D  I  A
     width: min-content;
   }
 
-  .msg {
+  #msg {
     margin-top: 0;
   }
 }
 
 /*
 =============
-T  H  E  M  E
+I  C  O  N  S
 =============
 */
 
-#themeIcon {
+[id$="Icon"] {
   position: absolute !important;
+  cursor: pointer;
+}
+
+[id$="Icon"]:focus {
+  outline: medium dotted var(--foreground);
+}
+
+#themeIcon {
   top: 1rem;
   right: 1rem;
-  cursor: pointer;
+}
+
+#autoIcon {
+  top: 1rem;
+  left: 1rem;
 }
 
 @media screen and (min-width: 1024px) {
@@ -162,7 +191,7 @@ T  H  E  M  E
     font-size: 11rem;
   }
 
-  .msg {
+  #msg {
     font-size: 2.2rem;
   }
 }
