@@ -230,6 +230,7 @@ const dom = (function(doc) {
     doc.querySelector("body").classList.toggle("robot-" + toggledClass);
     autoMode = !autoMode;
     storage.storePref("auto", autoMode);
+    activateMsg("Automatic mode: " + (autoMode ? "ON" : "OFF"))
   };
 
   // DOM storage
