@@ -68,6 +68,50 @@ const ticTacToe = (function() {
   };
 })();
 
+const ticTacBot = (function() {
+  let numbers = [null, null];
+
+  const randomize = () => {
+    let empty = false;
+    let autoRow, autoCol;
+    let board = ticTacToe.getBoard();
+    while (empty == false) {
+      autoRow = Math.floor(Math.random() * board.length);
+      autoCol = Math.floor(Math.random() * board[0].length);
+      if (board[autoRow][autoCol] == null) empty = true;
+    }
+    numbers = [autoRow, autoCol];
+    return numbers;
+  };
+  const getNums = () => {
+    return numbers;
+  };
+
+  return {
+    randomize,
+    getNums
+  };
+})();
+
+const storage = (function(doc) {
+  const storePref = (attr, val) => {
+    localStorage.setItem(attr, val);
+  };
+  const retPref = () => {
+    let pref = [];
+    let keys = Object.keys(localStorage);
+    keys.forEach(key => {
+      if (localStorage.getItem(key) == "true") pref.push(key);
+    });
+    return pref;
+  };
+
+  return {
+    storePref,
+    retPref
+  };
+})(document);
+
 const dom = (function(doc) {
   let container = doc.querySelector("#current");
   let grid = doc.querySelector(".grid");
@@ -177,6 +221,7 @@ const dom = (function(doc) {
     }
     body.classList.toggle("dark");
     darkMode = !darkMode;
+    storage.storePref("dark", darkMode)
   };
 
   // Automatic mode
@@ -184,37 +229,21 @@ const dom = (function(doc) {
     let toggledClass = darkMode ? "dark" : "light";
     doc.querySelector("body").classList.toggle("robot-" + toggledClass);
     autoMode = !autoMode;
+    storage.storePref("auto", autoMode);
+  };
+
+  // DOM storage
+  const restoreProfile = () => {
+    let keys = storage.retPref();
+    if (keys.includes("dark")) dom.changeTheme();
+    if (keys.includes("auto")) dom.automaticMode();
   };
 
   return {
     beginGame,
     markCell,
     changeTheme,
-    automaticMode
+    automaticMode,
+    restoreProfile
   };
 })(document);
-
-const ticTacBot = (function() {
-  let numbers = [null, null];
-
-  const randomize = () => {
-    let empty = false;
-    let autoRow, autoCol;
-    let board = ticTacToe.getBoard();
-    while (empty == false) {
-      autoRow = Math.floor(Math.random() * board.length);
-      autoCol = Math.floor(Math.random() * board[0].length);
-      if (board[autoRow][autoCol] == null) empty = true;
-    }
-    numbers = [autoRow, autoCol];
-    return numbers;
-  };
-  const getNums = () => {
-    return numbers;
-  };
-
-  return {
-    randomize,
-    getNums
-  };
-})();

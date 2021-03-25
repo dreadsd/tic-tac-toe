@@ -10,3 +10,5 @@ function handleEvents(e) {
 
 document.addEventListener("click", handleEvents);
 document.addEventListener("keydown", handleEvents);
+
+dom.restoreProfile()
