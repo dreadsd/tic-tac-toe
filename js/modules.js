@@ -72,6 +72,7 @@ const dom = (function(doc) {
   let container = doc.querySelector("#current")
   let grid      = doc.querySelector(".grid")
   let turn      = doc.querySelector("#turn")
+  let msgCont   = doc.querySelector("#msg")
   let autoMode  = false
   let finished
   let msg
@@ -103,7 +104,7 @@ const dom = (function(doc) {
       if(retCode >= 3) {
         target.textContent = currentMark
         finished = true
-        setTimeout(finishGame, 2000)
+        finishGame()
       }
       return code(retCode)
     }
@@ -117,7 +118,6 @@ const dom = (function(doc) {
     setCurrentMark()
   }
   const code = function(id) {
-    if(doc.querySelector("#current > .msg")) return
     switch(id) {
       case 1:
         msg = "Please start the game"; break
@@ -128,26 +128,27 @@ const dom = (function(doc) {
       case 4:
         msg = "Game Over"; break
     }
-    msg = createMsg(msg)
-    showMsg(msg)
-    setTimeout(disappearMsg.bind(this, msg), 2000)
+    activateMsg(msg)
   }
-  const createMsg = function(msg) {
-    let msgDiv = doc.createElement("div")
-    msgDiv.classList.add("msg")
-    msgDiv.textContent = msg
-    return msgDiv
+
+  const activateMsg = function(msg) {
+    let strtBtn = doc.querySelector("#current > .btn")
+    let disappeared = []
+
+    let elements = [strtBtn, turn]
+    elements.forEach(element => {
+      if(!element) return
+      element.classList.add("display-none")
+      disappeared.push(element)
+    })
+
+    msgCont.textContent = msg
+    setTimeout(disappearMsg.bind(this, disappeared), 2000)
   }
-  const showMsg = function(msgObj) {
-    toggleTurn()
-    container.append(msgObj)
-  }
-  const disappearMsg = function(msgObj) {
-    toggleTurn()
-    msgObj.remove()
-  }
-  const toggleTurn = function() {
-    turn.classList.toggle("display-none")
+
+  const disappearMsg = function(elements) {
+    msgCont.textContent = null
+    elements.forEach(element => element.classList.remove("display-none"))
   }
 
   // Finish game
