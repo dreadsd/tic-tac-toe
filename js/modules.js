@@ -1,3 +1,5 @@
+"use strict"
+
 const tictactoe = (function() {
   let board
   let started
@@ -71,6 +73,7 @@ const dom = (function(doc) {
   let grid      = doc.querySelector(".grid")
   let turn      = doc.querySelector("#turn")
   let autoMode  = false
+  let finished
   let msg
 
   // Start game
@@ -99,18 +102,17 @@ const dom = (function(doc) {
     if(Number.isInteger(retCode)) {
       if(retCode >= 3) {
         target.textContent = currentMark
-        finishGame()
+        finished = true
+        setTimeout(finishGame, 2000)
       }
       return code(retCode)
     }
     target.textContent = currentMark
-    console.log("Entry: " + currentMark + " " + coord)
     if(autoMode &&
-        !(coord[0] == bot.getNums()[0] && coord[1] == bot.getNums()[1])) {
+        !(coord[0] == ticTacBot.getNums()[0] && coord[1] == ticTacBot.getNums()[1])) {
 
-      let nums = bot.randomize().join("")
-      console.log(nums)
-      return markCell(document.querySelector(`[data-coord="${nums}"]`))
+      let nums = ticTacBot.randomize().join("")
+      return markCell(doc.querySelector(`[data-coord="${nums}"]`))
     }
     setCurrentMark()
   }
@@ -146,8 +148,6 @@ const dom = (function(doc) {
   }
   const toggleTurn = function() {
     turn.classList.toggle("display-none")
-    let startBtn = doc.querySelector("#start")
-    if(startBtn) startBtn.classList.toggle("display-none")
   }
 
   // Finish game
@@ -156,7 +156,7 @@ const dom = (function(doc) {
     container.append(createStartBtn())
   }
   const createStartBtn = function() {
-    let btn = document.createElement("div")
+    let btn = doc.createElement("div")
     btn.classList.add("btn")
     btn.id = "start"
     btn.textContent = "start"
@@ -181,16 +181,17 @@ const dom = (function(doc) {
   }
 })(document)
 
-const bot = (function() {
+const ticTacBot = (function() {
   let numbers = [null, null]
 
   const randomize = function() {
     let empty = false
     let autoRow, autoCol
+    let board = tictactoe.getBoard()
     while(empty == false) {
-      autoRow = Math.floor(Math.random() * tictactoe.getBoard().length)
-      autoCol = Math.floor(Math.random() * tictactoe.getBoard()[0].length)
-      if(tictactoe.getBoard()[autoRow][autoCol] == null) empty = true
+      autoRow = Math.floor(Math.random() * board.length)
+      autoCol = Math.floor(Math.random() * board[0].length)
+      if(board[autoRow][autoCol] == null) empty = true
     }
     numbers = [autoRow, autoCol]
     return numbers
