@@ -74,6 +74,7 @@ const dom = (function(doc) {
   let turn      = doc.querySelector("#turn")
   let msgCont   = doc.querySelector("#msg")
   let autoMode  = false
+  let darkMode  = false
   let finished
   let msg
 
@@ -167,12 +168,21 @@ const dom = (function(doc) {
 
   // Change theme
   const changeTheme = function() {
-    document.querySelector("body").classList.toggle("dark")
+    let body = doc.querySelector("body")
+    if(autoMode) {
+      let [rClass, aClass] = darkMode ? ["dark", "light"] : ["light", "dark"]
+      body.classList.remove("robot-" + rClass)
+      body.classList.add("robot-" + aClass)
+    }
+    body.classList.toggle("dark")
+    darkMode = !darkMode
   }
 
   // Automatic mode
   const automaticMode = function() {
-    autoMode = true
+    let toggledClass = darkMode ? "dark" : "light"
+    doc.querySelector("body").classList.toggle("robot-" + toggledClass)
+    autoMode = !autoMode
   }
 
   return {

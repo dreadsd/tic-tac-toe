@@ -1,15 +1,25 @@
 :root {
   --background: #fff;
   --foreground: #000;
-  --backghover: #ccc;
+  --backghover: #eee;
   --border-col: #111;
 }
 
 .dark {
   --background: #333;
   --foreground: #fff;
-  --backghover: #222;
+  --backghover: #444;
   --border-col: #eee;
+}
+
+.robot-light {
+  --background: #ffcccc;
+  --backghover: #eebbbb;
+}
+
+.robot-dark {
+  --background: #330000;
+  --backghover: #441111;
 }
 
 * {
