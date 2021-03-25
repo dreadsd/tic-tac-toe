@@ -158,7 +158,8 @@ const dom = (function(doc) {
   const createStartBtn = function() {
     let btn = doc.createElement("div")
     btn.classList.add("btn")
-    btn.id = "start"
+    btn.id          = "start"
+    btn.tabIndex    = 0
     btn.textContent = "start"
     return btn
   }

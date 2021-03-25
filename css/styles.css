@@ -54,6 +54,10 @@ G  R  I  D
   font-family: 'Neucha', cursive;
 }
 
+.cell:focus {
+  outline: thick dashed var(--foreground);
+}
+
 .cell:hover {
   background-color: var(--backghover);
 }
@@ -74,14 +78,16 @@ I  N  F  O
 */
 
 .btn {
-  padding: 1rem;
-  border-radius: 1.5rem;
   cursor: pointer;
   font-size: 5rem;
 }
 
+.btn:focus {
+  outline: thick dotted var(--foreground);
+}
+
 #start {
-  transition: all 0.5s ease-out;
+  transition: color 0.5s ease-out, margin 0.5s ease-out;
 }
 
 #start:hover {
@@ -145,6 +151,10 @@ I  C  O  N  S
 [id$="Icon"] {
   position: absolute !important;
   cursor: pointer;
+}
+
+[id$="Icon"]:focus {
+  outline: medium dotted var(--foreground);
 }
 
 #themeIcon {
