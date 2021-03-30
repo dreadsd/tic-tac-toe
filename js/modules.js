@@ -33,14 +33,7 @@ const ticTacToe = (function() {
     currentPlayer = currentPlayer == players[0] ? players[1] : players[0];
   };
   const checkWin = () => {
-    let combinations = [
-      board[0],     board[1],    board[2],
-      [board[0][0], board[1][0], board[2][0]],
-      [board[0][1], board[1][1], board[2][1]],
-      [board[0][2], board[1][2], board[2][2]],
-      [board[0][0], board[1][1], board[2][2]],
-      [board[0][2], board[1][1], board[2][0]]
-    ];
+    let combinations = getWinPos(board);
     combinations.forEach(combination => {
       if (combination.every((v,i) => v === currentPlayer)) winner = true;
     });
@@ -55,6 +48,16 @@ const ticTacToe = (function() {
   const getBoard = () => {
     return board;
   };
+  const getWinPos = (b) => {
+    return [
+      b[0],     b[1],    b[2],
+      [b[0][0], b[1][0], b[2][0]],
+      [b[0][1], b[1][1], b[2][1]],
+      [b[0][2], b[1][2], b[2][2]],
+      [b[0][0], b[1][1], b[2][2]],
+      [b[0][2], b[1][1], b[2][0]]
+    ];
+  };
   const debug = () => {
     console.log([board, started, currentPlayer, moves, winner]);
   };
@@ -64,32 +67,92 @@ const ticTacToe = (function() {
     mark,
     getCurrentPlayer,
     getBoard,
+    getWinPos,
     debug
   };
 })();
 
 const ticTacBot = (function() {
-  let numbers = [null, null];
+  let nums = [null, null];
 
-  const randomize = () => {
-    let empty = false;
-    let autoRow, autoCol;
+  const operate = () => {
+    let aiScore = Infinity;
+    let aiMove;
     let board = ticTacToe.getBoard();
-    while (empty == false) {
-      autoRow = Math.floor(Math.random() * board.length);
-      autoCol = Math.floor(Math.random() * board[0].length);
-      if (board[autoRow][autoCol] == null) empty = true;
+    let free = getFreeSpaces(board);
+    free.forEach(space => {
+      let clonedBoard = cloneBoard(board);
+      clonedBoard[space[0]][space[1]] = "X";
+      let score = minimax(clonedBoard, true);
+      if (score < aiScore) {
+        aiScore = score;
+        aiMove = space;
+      }
+    });
+    nums = aiMove;
+    return nums;
+  };
+  const getFreeSpaces = (board) => {
+    let idx = [];
+    board.forEach((row, rowi) => {
+      row.forEach((col, coli) => {
+        if (col == null) idx.push([rowi, coli]);
+      });
+    });
+    return idx;
+  };
+  const cloneBoard = (board) => {
+    let copy = [];
+    board.forEach(row => copy.push([...row]));
+    return copy;
+  };
+  const minimax = (board, isMaximizing) => {
+    let free = getFreeSpaces(board);
+    let winner = isWin(board);
+    if (winner) {
+      return winner == "O" ? 1 : -1;
+    } else if (!free.length) {
+      return 0;
     }
-    numbers = [autoRow, autoCol];
-    return numbers;
+
+    if (isMaximizing) {
+      let maxValue = -Infinity;
+      free.forEach(space => {
+        let clonedBoard = cloneBoard(board);
+        clonedBoard[space[0]][space[1]] = "O";
+        maxValue = Math.max(maxValue, minimax(clonedBoard, false));
+      });
+      return maxValue;
+    } else {
+      let minValue = Infinity;
+      free.forEach(space => {
+        let clonedBoard = cloneBoard(board);
+        clonedBoard[space[0]][space[1]] = "X";
+        minValue = Math.min(minValue, minimax(clonedBoard, true));
+      });
+      return minValue;
+    }
+  };
+  const isWin = (board) => {
+    let token;
+    ticTacToe.getWinPos(board).forEach(pos => {
+      if (pos.every(cell => cell == pos[0]) && pos[0] != null) {
+        token = pos[0];
+      }
+    });
+    return token;
   };
   const getNums = () => {
-    return numbers;
+    return nums;
   };
+  const reset = () => {
+    nums = [null, null];
+  }
 
   return {
-    randomize,
-    getNums
+    operate,
+    getNums,
+    reset
   };
 })();
 
@@ -119,11 +182,12 @@ const dom = (function(doc) {
   let msgCont = doc.querySelector("#msg");
   let autoMode = false;
   let darkMode = false;
-  let finished;
+  let finished = true;
   let msg;
 
   // Start game
   const beginGame = (e) => {
+    finished = false;
     resetGrid();
     ticTacToe.startGame();
     e.target.remove();
@@ -144,7 +208,7 @@ const dom = (function(doc) {
   const markCell = (target) => {
     let coord = target.dataset.coord.split("");
     let currentMark = ticTacToe.getCurrentPlayer();
-    let retCode = ticTacToe.mark(coord[0], coord[1]);
+    let retCode = ticTacToe.mark(...coord);
     if (Number.isInteger(retCode)) {
       if (retCode >= 3) {
         target.textContent = currentMark;
@@ -157,7 +221,7 @@ const dom = (function(doc) {
     if (autoMode) {
       let botCoords = ticTacBot.getNums();
       if (!(coord[0] == botCoords[0] && coord[1] == botCoords[1])) {
-        let nums = ticTacBot.randomize().join("");
+        let nums = ticTacBot.operate().join("");
         return markCell(doc.querySelector(`[data-coord="${nums}"]`));
       }
     }
@@ -199,6 +263,7 @@ const dom = (function(doc) {
 
   // Finish game
   const finishGame = () => {
+    ticTacBot.reset();
     turn.textContent = null;
     container.append(createStartBtn());
   };
@@ -226,6 +291,7 @@ const dom = (function(doc) {
 
   // Automatic mode
   const automaticMode = () => {
+    if (!finished) return activateMsg("You can't do that");
     let toggledClass = darkMode ? "dark" : "light";
     doc.querySelector("body").classList.toggle("robot-" + toggledClass);
     autoMode = !autoMode;
