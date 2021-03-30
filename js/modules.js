@@ -96,7 +96,7 @@ const ticTacBot = (function() {
     let idx = [];
     board.forEach((row, rowi) => {
       row.forEach((col, coli) => {
-        if (col == null) idx.push([rowi, coli])
+        if (col == null) idx.push([rowi, coli]);
       });
     });
     return idx;
@@ -182,11 +182,12 @@ const dom = (function(doc) {
   let msgCont = doc.querySelector("#msg");
   let autoMode = false;
   let darkMode = false;
-  let finished;
+  let finished = true;
   let msg;
 
   // Start game
   const beginGame = (e) => {
+    finished = false;
     resetGrid();
     ticTacToe.startGame();
     e.target.remove();
@@ -290,6 +291,7 @@ const dom = (function(doc) {
 
   // Automatic mode
   const automaticMode = () => {
+    if (!finished) return activateMsg("You can't do that");
     let toggledClass = darkMode ? "dark" : "light";
     doc.querySelector("body").classList.toggle("robot-" + toggledClass);
     autoMode = !autoMode;
