@@ -2,11 +2,13 @@
 
 const ticTacBot = (function() {
   let nums = [null, null];
+  let winningPos;
+  let board;
 
   const operate = () => {
     let aiScore = Infinity;
     let aiMove;
-    let board = ticTacToe.getBoard();
+    pubSub.publish("request board");
     let free = getFreeSpaces(board);
     free.forEach(space => {
       let clonedBoard = cloneBoard(board);
@@ -18,7 +20,7 @@ const ticTacBot = (function() {
       }
     });
     nums = aiMove;
-    return nums;
+    pubSub.publish("change bot coords", nums);
   };
   const getFreeSpaces = (board) => {
     let idx = [];
@@ -63,7 +65,8 @@ const ticTacBot = (function() {
   };
   const isWin = (board) => {
     let token;
-    ticTacToe.getWinPos(board).forEach(pos => {
+    pubSub.publish("request win pos", board);
+    winningPos.forEach(pos => {
       if (pos.every(cell => cell == pos[0]) && pos[0] != null) {
         token = pos[0];
       }
@@ -77,9 +80,16 @@ const ticTacBot = (function() {
     nums = [null, null];
   }
 
-  return {
-    operate,
-    getNums,
-    reset
-  };
+  // Events
+  const setBoard = (rBoard) => {
+    board = rBoard;
+  }
+  const setWinPos = (pos) => {
+    winningPos = pos;
+  }
+
+  pubSub.subscribe("finish game", reset);
+  pubSub.subscribe("start bot", operate);
+  pubSub.subscribe("get board pos", setBoard);
+  pubSub.subscribe("get winning pos", setWinPos);
 })();

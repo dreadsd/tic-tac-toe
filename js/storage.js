@@ -10,11 +10,11 @@ const storage = (function(doc) {
     keys.forEach(key => {
       if (localStorage.getItem(key) == "true") pref.push(key);
     });
-    return pref;
+    pubSub.publish("get preferences", pref);
   };
 
-  return {
-    storePref,
-    retPref
-  };
+  // Events
+  pubSub.subscribe("set dark mode", val => storePref("dark", val));
+  pubSub.subscribe("set auto mode", val => storePref("auto", val));
+  pubSub.subscribe("request pref keys", retPref);
 })(document);

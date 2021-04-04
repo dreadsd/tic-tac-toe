@@ -5,16 +5,23 @@ const dom = (function(doc) {
   let grid = doc.querySelector(".grid");
   let turn = doc.querySelector("#turn");
   let msgCont = doc.querySelector("#msg");
+
   let autoMode = false;
   let darkMode = false;
+
   let finished = true;
+  let currentPlayer = "O";
+
+  let botCoords = [null, null];
+  let returnCode;
   let msg;
+  let preferences;
 
   // Start game
   const beginGame = (e) => {
     finished = false;
     resetGrid();
-    ticTacToe.startGame();
+    pubSub.publish("start game");
     e.target.remove();
     setCurrentMark();
   };
@@ -26,43 +33,42 @@ const dom = (function(doc) {
     }
   };
   const setCurrentMark = () => {
-    turn.textContent = `"${ticTacToe.getCurrentPlayer()}"`;
+    turn.textContent = `"${currentPlayer}"`;
   };
 
   // Mark cell
   const markCell = (target) => {
     let coord = target.dataset.coord.split("");
-    let currentMark = ticTacToe.getCurrentPlayer();
-    let retCode = ticTacToe.mark(...coord);
-    if (Number.isInteger(retCode)) {
-      if (retCode >= 3) {
+    let currentMark = currentPlayer;
+    pubSub.publish("mark", coord);
+    if (Number.isInteger(returnCode)) {
+      if (returnCode >= 3) {
         target.textContent = currentMark;
-        finished = true;
         finishGame();
       }
-      return code(retCode);
+      return code();
     }
     target.textContent = currentMark;
     if (autoMode) {
-      let botCoords = ticTacBot.getNums();
       if (!(coord[0] == botCoords[0] && coord[1] == botCoords[1])) {
-        let nums = ticTacBot.operate().join("");
-        return markCell(doc.querySelector(`[data-coord="${nums}"]`));
+        pubSub.publish("start bot");
+        return markCell(doc.querySelector(`[data-coord="${botCoords.join("")}"]`));
       }
     }
     setCurrentMark();
   };
-  const code = (id) => {
-    switch (id) {
+  const code = () => {
+    switch (returnCode) {
       case 1:
         msg = "Please start the game"; break;
       case 2:
         msg = "That cell is not empty"; break;
       case 3:
-        msg = `"${ticTacToe.getCurrentPlayer()}" won!`; break;
+        msg = `"${currentPlayer}" won!`; break;
       case 4:
         msg = "Game Over"; break;
     }
+    returnCode = null;
     activateMsg(msg);
   };
 
@@ -88,7 +94,10 @@ const dom = (function(doc) {
 
   // Finish game
   const finishGame = () => {
-    ticTacBot.reset();
+    finished = true;
+    currentPlayer = "O";
+    botCoords = [null, null]
+    pubSub.publish("finish game");
     turn.textContent = null;
     container.append(createStartBtn());
   };
@@ -111,7 +120,7 @@ const dom = (function(doc) {
     }
     body.classList.toggle("dark");
     darkMode = !darkMode;
-    storage.storePref("dark", darkMode)
+    pubSub.publish("set dark mode", darkMode);
   };
 
   // Automatic mode
@@ -120,16 +129,36 @@ const dom = (function(doc) {
     let toggledClass = darkMode ? "dark" : "light";
     doc.querySelector("body").classList.toggle("robot-" + toggledClass);
     autoMode = !autoMode;
-    storage.storePref("auto", autoMode);
+    pubSub.publish("set auto mode", autoMode);
     activateMsg("Automatic mode: " + (autoMode ? "ON" : "OFF"))
   };
 
   // DOM storage
   const restoreProfile = () => {
-    let keys = storage.retPref();
-    if (keys.includes("dark")) dom.changeTheme();
-    if (keys.includes("auto")) dom.automaticMode();
+    pubSub.publish("request pref keys");
+    if (preferences.includes("dark")) dom.changeTheme();
+    if (preferences.includes("auto")) dom.automaticMode();
   };
+
+
+  // Events
+  const setCurrPlayer = (token) => {
+    currentPlayer = token;
+  };
+  const setRetCode = (code) => {
+    returnCode = code;
+  };
+  const setBotCoords = (coords) => {
+    botCoords = coords;
+  };
+  const setPreferences = (keys) => {
+    preferences = keys;
+  };
+
+  pubSub.subscribe("change player", setCurrPlayer);
+  pubSub.subscribe("change return code", setRetCode);
+  pubSub.subscribe("change bot coords", setBotCoords);
+  pubSub.subscribe("get preferences", setPreferences);
 
   return {
     beginGame,
