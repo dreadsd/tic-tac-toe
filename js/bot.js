@@ -5,6 +5,7 @@ const ticTacBot = (function() {
   let winningPos;
   let board;
 
+  // Start operation
   const operate = () => {
     let aiScore = Infinity;
     let aiMove;
@@ -36,6 +37,8 @@ const ticTacBot = (function() {
     board.forEach(row => copy.push([...row]));
     return copy;
   };
+
+  // Minimax algorithm
   const minimax = (board, isMaximizing) => {
     let free = getFreeSpaces(board);
     let winner = isWin(board);
@@ -73,23 +76,14 @@ const ticTacBot = (function() {
     });
     return token;
   };
-  const getNums = () => {
-    return nums;
-  };
-  const reset = () => {
-    nums = [null, null];
-  }
 
   // Events
-  const setBoard = (rBoard) => {
-    board = rBoard;
-  }
-  const setWinPos = (pos) => {
-    winningPos = pos;
-  }
+  const reset = () => nums = [null, null];
+  const setBoard = (rBoard) => board = rBoard;
+  const setWinPos = (pos) => winningPos = pos;
 
-  pubSub.subscribe("finish game", reset);
   pubSub.subscribe("start bot", operate);
+  pubSub.subscribe("finish game", reset);
   pubSub.subscribe("get board pos", setBoard);
-  pubSub.subscribe("get winning pos", setWinPos);
+  pubSub.subscribe("get win pos", setWinPos);
 })();

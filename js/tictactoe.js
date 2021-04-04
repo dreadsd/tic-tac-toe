@@ -9,6 +9,7 @@ const ticTacToe = (function() {
   let currentPlayer;
   let winner;
 
+  // Start game
   const startGame = () => {
     board = [
       [null, null, null], [null, null, null], [null, null, null]
@@ -18,6 +19,8 @@ const ticTacToe = (function() {
     winner = null;
     started = true;
   };
+
+  // Mark cell
   const mark = (coord) => {
     if (!started) {
       return useCode(1);
@@ -39,13 +42,6 @@ const ticTacToe = (function() {
       if (combination.every((v,i) => v === currentPlayer)) winner = true;
     });
   };
-  const useCode = (msg, isOver=false) => {
-    if (isOver) started = false;
-    pubSub.publish("change return code", msg)
-  };
-  const getBoard = () => {
-    return board;
-  };
   const getWinPos = (b) => {
     return [
       b[0],     b[1],    b[2],
@@ -56,20 +52,19 @@ const ticTacToe = (function() {
       [b[0][2], b[1][1], b[2][0]]
     ];
   };
-  const debug = () => {
-    console.log([board, started, currentPlayer, moves, winner]);
+
+  // Messages and game over
+  const useCode = (msg, isOver=false) => {
+    if (isOver) started = false;
+    pubSub.publish("change return code", msg)
   };
 
   // Events
-  const retrieveBoard = () => {
-    pubSub.publish("get board pos", board);
-  };
-  const retrieveWinPos = (board) => {
-    pubSub.publish("get winning pos", getWinPos(board));
-  };
+  const retrieveBoard = () => pubSub.publish("get board pos", board);
+  const retWinPos = (board) => pubSub.publish("get win pos", getWinPos(board));
 
   pubSub.subscribe("start game", startGame);
   pubSub.subscribe("mark", mark);
   pubSub.subscribe("request board", retrieveBoard);
-  pubSub.subscribe("request win pos", retrieveWinPos);
+  pubSub.subscribe("request win pos", retWinPos);
 })();

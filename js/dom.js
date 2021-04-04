@@ -18,21 +18,19 @@ const dom = (function(doc) {
   let preferences;
 
   // Start game
-  const beginGame = (e) => {
+  const beginGame = (target) => {
     finished = false;
-    resetGrid();
-    pubSub.publish("start game");
-    e.target.remove();
-    setCurrentMark();
+    _resetGrid();
+    target.remove();
+    _setCurrentMark();
+    pubSub.publish("start game")
   };
-  const resetGrid = () => {
-    let i = 0;
-    while (i < grid.childElementCount) {
+  const _resetGrid = () => {
+    for (let i = 0; i < grid.childElementCount; i++) {
       grid.children[i].textContent = null;
-      i++;
     }
   };
-  const setCurrentMark = () => {
+  const _setCurrentMark = () => {
     turn.textContent = `"${currentPlayer}"`;
   };
 
@@ -42,22 +40,14 @@ const dom = (function(doc) {
     let currentMark = currentPlayer;
     pubSub.publish("mark", coord);
     if (Number.isInteger(returnCode)) {
-      if (returnCode >= 3) {
-        target.textContent = currentMark;
-        finishGame();
-      }
-      return code();
+      if (returnCode >= 3) target.textContent = currentMark;
+      return _code();
     }
     target.textContent = currentMark;
-    if (autoMode) {
-      if (!(coord[0] == botCoords[0] && coord[1] == botCoords[1])) {
-        pubSub.publish("start bot");
-        return markCell(doc.querySelector(`[data-coord="${botCoords.join("")}"]`));
-      }
-    }
-    setCurrentMark();
+    if (autoMode) return _operateBot(coord)
+    _setCurrentMark();
   };
-  const code = () => {
+  const _code = () => {
     switch (returnCode) {
       case 1:
         msg = "Please start the game"; break;
@@ -68,11 +58,17 @@ const dom = (function(doc) {
       case 4:
         msg = "Game Over"; break;
     }
+    if (returnCode >= 3) _finishGame();
     returnCode = null;
-    activateMsg(msg);
+    _activateMsg(msg);
   };
-
-  const activateMsg = (msg) => {
+  const _operateBot = (coord) => {
+    if (!(coord[0] == botCoords[0] && coord[1] == botCoords[1])) {
+      pubSub.publish("start bot");
+      return markCell(doc.querySelector(`[data-coord="${botCoords.join("")}"]`));
+    }
+  }
+  const _activateMsg = (msg) => {
     let strtBtn = doc.querySelector("#current > .btn");
     let disappeared = [];
 
@@ -84,24 +80,26 @@ const dom = (function(doc) {
     });
 
     msgCont.textContent = msg;
-    setTimeout(disappearMsg.bind(this, disappeared), 2000);
+    setTimeout(_disappearMsg.bind(this, disappeared), 2000);
   };
-
-  const disappearMsg = (elements) => {
+  const _disappearMsg = (elements) => {
     msgCont.textContent = null;
     elements.forEach(element => element.classList.remove("display-none"));
   };
 
   // Finish game
-  const finishGame = () => {
+  const _finishGame = () => {
+    _resetProperties();
+    turn.textContent = null;
+    container.append(_createStartBtn());
+    pubSub.publish("finish game");
+  };
+  const _resetProperties = () => {
     finished = true;
     currentPlayer = "O";
-    botCoords = [null, null]
-    pubSub.publish("finish game");
-    turn.textContent = null;
-    container.append(createStartBtn());
-  };
-  const createStartBtn = () => {
+    botCoords = [null, null];
+  }
+  const _createStartBtn = () => {
     let btn = doc.createElement("div");
     btn.classList.add("btn");
     btn.id = "start";
@@ -112,25 +110,24 @@ const dom = (function(doc) {
 
   // Change theme
   const changeTheme = () => {
-    let body = doc.querySelector("body");
-    if (autoMode) {
-      let [rClass, aClass] = darkMode ? ["dark", "light"] : ["light", "dark"];
-      body.classList.remove("robot-" + rClass);
-      body.classList.add("robot-" + aClass);
-    }
-    body.classList.toggle("dark");
+    if (autoMode) _swapAutoTheme();
+    doc.body.classList.toggle("dark");
     darkMode = !darkMode;
     pubSub.publish("set dark mode", darkMode);
+  };
+  const _swapAutoTheme = () => {
+    let [rClass, aClass] = darkMode ? ["dark", "light"] : ["light", "dark"];
+    doc.body.classList.remove("robot-" + rClass);
+    doc.body.classList.add("robot-" + aClass);
   };
 
   // Automatic mode
   const automaticMode = () => {
-    if (!finished) return activateMsg("You can't do that");
-    let toggledClass = darkMode ? "dark" : "light";
-    doc.querySelector("body").classList.toggle("robot-" + toggledClass);
+    if (!finished) return _activateMsg("You can't do that");
+    doc.body.classList.toggle("robot-" + (darkMode ? "dark" : "light"));
     autoMode = !autoMode;
+    _activateMsg("Automatic mode: " + (autoMode ? "ON" : "OFF"))
     pubSub.publish("set auto mode", autoMode);
-    activateMsg("Automatic mode: " + (autoMode ? "ON" : "OFF"))
   };
 
   // DOM storage
@@ -140,25 +137,16 @@ const dom = (function(doc) {
     if (preferences.includes("auto")) dom.automaticMode();
   };
 
-
   // Events
-  const setCurrPlayer = (token) => {
-    currentPlayer = token;
-  };
-  const setRetCode = (code) => {
-    returnCode = code;
-  };
-  const setBotCoords = (coords) => {
-    botCoords = coords;
-  };
-  const setPreferences = (keys) => {
-    preferences = keys;
-  };
+  const _setCurrPlayer = (token) => currentPlayer = token;
+  const _setRetCode = (code) => returnCode = code;
+  const _setBotCoords = (coords) => botCoords = coords;
+  const _setPreferences = (keys) => preferences = keys;
 
-  pubSub.subscribe("change player", setCurrPlayer);
-  pubSub.subscribe("change return code", setRetCode);
-  pubSub.subscribe("change bot coords", setBotCoords);
-  pubSub.subscribe("get preferences", setPreferences);
+  pubSub.subscribe("change player", _setCurrPlayer);
+  pubSub.subscribe("change return code", _setRetCode);
+  pubSub.subscribe("change bot coords", _setBotCoords);
+  pubSub.subscribe("get preferences", _setPreferences);
 
   return {
     beginGame,
